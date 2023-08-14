@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueValidator
 
 
 from users.models import User
-from api_yamdb.settings import MAX_LENGTH, EMAIL_MAX_LENGTH
+from foodgram.settings import MAX_LENGTH, EMAIL_MAX_LENGTH
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -22,8 +22,8 @@ class User(AbstractUser):
                               blank=False, unique=True)
     username = models.CharField(blank=False,
                                 max_length=MAX_LENGTH, unique=True)
-    last_name = models.CharField(max_length=MAX_LENGTH, blank=True)
-    first_name = models.CharField(max_length=MAX_LENGTH, blank=True)
+    last_name = models.CharField(max_length=MAX_LENGTH, blank=False)
+    first_name = models.CharField(max_length=MAX_LENGTH, blank=False)
 
     class Meta:
         verbose_name = 'Пользователь'

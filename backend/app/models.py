@@ -6,24 +6,24 @@ from foodgram.settings import NAME_MAX_LENGTH
 
 class Tag(models.Model):
     name = models.CharField(max_length=NAME_MAX_LENGTH,
-                            verbose_name='Имя',)
-    color = models.CharField(max_length=16)
+                            verbose_name='Имя', unique=True, blank=False)
+    color = models.CharField(max_length=16, unique=True, blank=False)
     slug = models.CharField(max_length=NAME_MAX_LENGTH,
-                            verbose_name='Slug',)
+                            verbose_name='Slug', unique=True, blank=False)
 
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=NAME_MAX_LENGTH,
-                            verbose_name='Имя',)
-    measurement_unit = models.CharField(max_length=16)
+                            verbose_name='Имя', blank=False)
+    measurement_unit = models.CharField(max_length=16, blank=False)
 
 
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='reviews')
-    name = models.CharField(max_length=NAME_MAX_LENGTH,
+    name = models.CharField(blank=False, max_length=NAME_MAX_LENGTH,
                             verbose_name='Имя',)
-    text = models.TextField(blank=True,
+    text = models.TextField(blank=False,
                             verbose_name='Описание')
     tags = models.ManyToManyField(Tag,
                                   related_name='tags',
@@ -34,7 +34,8 @@ class Recipe(models.Model):
         default=None
     )
     cooking_time = models.IntegerField(validators=[MinValueValidator(1)],
-                                       verbose_name='Время приготовления')
+                                       verbose_name='Время приготовления',
+                                       blank=False)
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='ingredients',
