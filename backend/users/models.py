@@ -40,3 +40,10 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+
+
+class Subscriptions(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='author')
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
+                                   related_name='subscriber')
