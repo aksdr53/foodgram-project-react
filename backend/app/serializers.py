@@ -49,9 +49,16 @@ class RecipeSerializer(serializers.ModelSerializer):
     def get_is_favorited(self, obj):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
-            return current_user.users_favorites.filter(recipe=obj)
+            return current_user.users_favorites.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
-            return current_user.users_shopping_cart.filter(recipe=obj)
+            return current_user.users_shopping_cart.filter(recipe=obj).exists()
+        
+
+class Shopping_cartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
