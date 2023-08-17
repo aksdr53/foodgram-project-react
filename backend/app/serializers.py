@@ -55,7 +55,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
             return current_user.users_shopping_cart.filter(recipe=obj).exists()
-        
+
 
 class Shopping_cartSerializer(serializers.ModelSerializer):
 
