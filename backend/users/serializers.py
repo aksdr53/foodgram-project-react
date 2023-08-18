@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueValidator
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions as django_exceptions
 
 
 from users.models import User
@@ -15,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            "username", "email", "first_name", "last_name",
+            "id", "username", "email", "first_name", "last_name",
             "is_subscribed"
         )
         model = User
@@ -56,3 +58,26 @@ class TokenSerializer(serializers.Serializer):
         if not User.objects.filter(username=username).exists():
             raise NotFound("Данный пользователь не зарегистрирован")
         return data
+
+
+class SetPasswordSerializer(serializers.ModelSerializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('new_password', 'current_password')
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        password = attrs.get("current_password")
+
+        try:
+            validate_password(password, user)
+        except django_exceptions.ValidationError as e:
+            serializer_error = serializers.as_serializer_error(e)
+            raise serializers.ValidationError(
+                {"password": serializer_error["non_field_errors"]}
+            )
+
+        return attrs

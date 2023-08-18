@@ -2,10 +2,11 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from .models import Recipe, Tag, Shopping_cart, Favorites
+from .models import Recipe, Tag, Shopping_cart, Favorites, Ingredient
 from .serializers import (RecipeSerializer,
                           TagSerializer,
-                          Shopping_cartSerializer)
+                          Shopping_cartSerializer,
+                          IngredientSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -70,3 +71,8 @@ class ListRetrieveViewSet(mixins.ListModelMixin,
 class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class IngredientViewSet(ListRetrieveViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
