@@ -96,14 +96,14 @@ class AuthorSerializer(serializers.ModelSerializer):
             "id", "username", "email", "first_name", "last_name",
             "is_subscribed", "recipes", "recipes_count"
         )
-    
+
     def get_recipes(self, obj):
         recipes_limit = self.context['request'].query_params['recipes_limit']
         return RecipeSerializer(obj.recipes[:recipes_limit], many=True).data
-    
+
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-    
+
     def get_is_subscribed(self, obj):
         current_user = self.context['request'].user
         if current_user.is_authenticated:

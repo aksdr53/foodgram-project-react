@@ -1,9 +1,10 @@
-from rest_framework import viewsets, mixins, status, filters
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
-from .models import User
+from .models import User, Subscriptions
 from .serializers import (UserSerializer,
                           SetPasswordSerializer,
                           AuthorSerializer)
@@ -24,18 +25,30 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(["post"], detail=False)
+    @action(["post"], detail=False,
+            permission_classes=[IsAuthenticated, ])
     def set_password(self, request, *args, **kwargs):
         serializer = SetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
-    
-    @action(["get", "post", "delete"])
+
+    @action(["get"],
+            permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
         authors = request.user.subscriber.all().author.all()
         serializer = AuthorSerializer(authors, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+    @action(['post', 'delete'], detail=True,
+            permission_classes=[IsAuthenticated, ])
+    def subscribe(self, request, pk):
+        author = get_object_or_404(User, id=pk)
+        user = request.user
+        if user.id != pk and (
+            not user.subscriber.filter(author=author).exists()
+        ):
+            Subscriptions.objects.create(author=author, user=user)
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
