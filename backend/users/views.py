@@ -49,6 +49,9 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.id != pk and (
             not user.subscriber.filter(author=author).exists()
         ):
-            Subscriptions.objects.create(author=author, user=user)
+            if request.method == 'POST':
+                Subscriptions.objects.create(author=author, user=user)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            Subscriptions.objects.delete(author=author, user=user)
             return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
