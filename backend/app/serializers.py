@@ -3,7 +3,7 @@ import base64
 from rest_framework import serializers
 from django.core.files.base import ContentFile
 
-from .models import Tag, Ingredient, Recipe
+from .models import Tag, Ingredient, Recipe, Ingredients_amount
 from users.serializers import UserSerializer
 
 
@@ -26,13 +26,26 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(source='ingredient.id')
+    name = serializers.CharField(source='ingredient.name')
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit'
+        )
 
     class Meta:
-        model = Ingredient
-        fields = ('id', 'name', 'measurement_unit')
+        model = Ingredients_amount
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class IngredientAmountSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(source='ingredient')
+
+    class Meta:
+        model = Ingredients_amount
+        fields = ('id', 'amount')
+
+
+class RecipeListSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     tags = TagSerializer(many=True)
     ingredients = IngredientSerializer(many=True)
@@ -55,6 +68,18 @@ class RecipeSerializer(serializers.ModelSerializer):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
             return current_user.users_shopping_cart.filter(recipe=obj).exists()
+
+
+class RecipeCreateSerializer(serializers.ModelSerializer):
+    ingredients = IngredientAmountSerializer(many=True)
+    image = Base64ImageField()
+    tags = TagSerializer(many=True)
+    author = UserSerializer()
+
+    class Meta:
+        model = Recipe
+        fields = ('ingredients', 'tags'
+                  'image', 'name', 'text', 'cooking_time')
 
 
 class Shopping_cartSerializer(serializers.ModelSerializer):

@@ -7,6 +7,7 @@ from django.core import exceptions as django_exceptions
 
 from users.models import User
 from foodgram.settings import MAX_LENGTH, EMAIL_MAX_LENGTH
+from app.serializers import RecipeSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
             return current_user.subscriber.filter(author=obj).exists()
+        return False
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -63,6 +65,7 @@ class TokenSerializer(serializers.Serializer):
 class SetPasswordSerializer(serializers.ModelSerializer):
     current_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True)
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -81,3 +84,28 @@ class SetPasswordSerializer(serializers.ModelSerializer):
             )
 
         return attrs
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "id", "username", "email", "first_name", "last_name",
+            "is_subscribed", "recipes", "recipes_count"
+        )
+    
+    def get_recipes(self, obj):
+        recipes_limit = self.context['request'].query_params['recipes_limit']
+        return RecipeSerializer(obj.recipes[:recipes_limit], many=True).data
+    
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
+    
+    def get_is_subscribed(self, obj):
+        current_user = self.context['request'].user
+        if current_user.is_authenticated:
+            return current_user.subscriber.filter(author=obj).exists()
+        return False

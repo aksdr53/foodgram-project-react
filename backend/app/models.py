@@ -20,13 +20,13 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='reviews')
+                               related_name='recipes')
     name = models.CharField(blank=False, max_length=NAME_MAX_LENGTH,
                             verbose_name='Имя',)
     text = models.TextField(blank=False,
                             verbose_name='Описание')
     tags = models.ManyToManyField(Tag,
-                                  related_name='tags',
+                                  related_name='tags_in_recipe',
                                   verbose_name='Тэги')
     image = models.ImageField(
         upload_to='recipes/images/',
@@ -36,11 +36,6 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(validators=[MinValueValidator(1)],
                                        verbose_name='Время приготовления',
                                        blank=False)
-    ingredients = models.ManyToManyField(
-        Ingredient,
-        related_name='ingredients',
-        verbose_name='Ингридиенты'
-    )
     pub_date = models.DateTimeField(auto_now_add=True,
                                     verbose_name='Дата публикации')
 
@@ -64,3 +59,11 @@ class Shopping_cart(models.Model):
                              related_name='users_shopping_cart')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='recipe_in_users_shopping_cart')
+
+
+class Ingredients_amount(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='ingredients_amount_in_recipe')
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
+                                   related_name='ingredients_amount')
+    amount = models.PositiveIntegerField()

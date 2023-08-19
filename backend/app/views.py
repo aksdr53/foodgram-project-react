@@ -71,6 +71,7 @@ class ListRetrieveViewSet(mixins.ListModelMixin,
 class TagViewSet(ListRetrieveViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class IngredientViewSet(ListRetrieveViewSet):
