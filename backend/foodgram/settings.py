@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'djoser',
     'app.apps.AppConfig'
     'users.apps.UsersConfig'
+    'reportlab'
 ]
 
 MIDDLEWARE = [
