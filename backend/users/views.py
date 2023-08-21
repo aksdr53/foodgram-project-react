@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 from .models import User, Subscriptions
 from .serializers import (UserSerializer,
                           SetPasswordSerializer,
-                          AuthorSerializer)
+                          AuthorSerializer,
+                          SignUpSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -18,6 +19,12 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
+
+    def get_serializer_class(self, request):
+        if self.action == "list" or self.action == "retrieve":
+            return UserSerializer
+        if self.action == "create":
+            return SignUpSerializer
 
     @action(methods=['get'], detail=False, url_path='me',
             permission_classes=[IsAuthenticated, ])

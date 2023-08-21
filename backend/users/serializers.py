@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
@@ -35,6 +34,12 @@ class SignUpSerializer(serializers.Serializer):
     username = serializers.RegexField(regex=r'^[\w.@+-]+\Z',
                                       required=True, max_length=MAX_LENGTH)
 
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'password')
+        read_only_fields = ('id', )
+
     def validate_username(self, value):
         if (
             value.lower() == 'me'
@@ -42,24 +47,6 @@ class SignUpSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'Нельзя указывать me в качестве имени')
         return value
-
-
-class ProfileSerializer(UserSerializer):
-
-    class Meta(UserSerializer.Meta):
-        read_only_fields = ("role",)
-
-
-class TokenSerializer(serializers.Serializer):
-
-    username = serializers.CharField(required=True)
-    confirmation_code = serializers.CharField(required=True)
-
-    def validate(self, data):
-        username = data.get('username')
-        if not User.objects.filter(username=username).exists():
-            raise NotFound("Данный пользователь не зарегистрирован")
-        return data
 
 
 class SetPasswordSerializer(serializers.ModelSerializer):
