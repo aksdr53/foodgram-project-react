@@ -66,7 +66,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    @action(methods=['get'])
+    @action(methods=['get'], detail=False)
     def download_shopping_cart(self, request):
         user = request.user
         recipes = user.users_shopping_cart.recipe

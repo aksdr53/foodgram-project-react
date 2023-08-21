@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'djoser',
-    'app.apps.AppConfig'
-    'users.apps.UsersConfig'
+    'app.apps.AppConfig',
+    'users.apps.UsersConfig',
     'reportlab'
 ]
 
@@ -140,7 +140,7 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

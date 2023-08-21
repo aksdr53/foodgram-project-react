@@ -7,13 +7,14 @@ from foodgram.settings import BASE_DIR
 
 
 class Command(BaseCommand):
-    def handle(self, filepath):
-        with open(BASE_DIR/filepath, 'r') as file:
+    def handle(self, *args, **kwargs):
+        with open(BASE_DIR/'ingredients.csv', 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             ingredients = []
             for row in reader:
+                print(row)
                 ingredients.append(Ingredient(
-                    name=row[0],
-                    measurement_unit=row[1]
+                    name=row['name'],
+                    measurement_unit=row['measurement_unit']
                 ))
         Ingredient.objects.bulk_create(ingredients)
