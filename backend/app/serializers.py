@@ -3,7 +3,7 @@ import base64
 from rest_framework import serializers
 from django.core.files.base import ContentFile
 
-from .models import Tag, Recipe, Ingredients_amount
+from .models import Tag, Recipe, Ingredients_amount, Ingredient
 from users.serializers import UserSerializer
 
 
@@ -26,6 +26,13 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ingredient
+        fields = ('id', 'name', 'measurement_unit')
+
+
+class IngredientRecipeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='ingredient.name')
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit'
@@ -54,7 +61,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     tags = TagSerializer(many=True)
-    ingredients = IngredientSerializer(many=True)
+    ingredients = IngredientRecipeSerializer(many=True)
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
