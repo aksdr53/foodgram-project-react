@@ -1,22 +1,28 @@
 import io
 
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from django.db.models import Sum
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Recipe, Tag, Shopping_cart, Favorites, Ingredient
 from .serializers import (RecipeSerializer,
                           TagSerializer,
                           Shopping_cartSerializer,
                           IngredientSerializer)
+from .filters import RecipeFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = RecipeFilter
+    pagination_class = PageNumberPagination
 
     @action(methods=['post', 'delete'], detail=True)
     def shopping_cart(self, request, pk):
@@ -113,3 +119,6 @@ class TagViewSet(ListRetrieveViewSet):
 class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    pagination_class = None
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )

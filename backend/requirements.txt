@@ -10,3 +10,4 @@ pytest-pythonpath==0.7.3
 PyYAML==6.0
 django-cors-headers==3.13.0
 reportlab==4.0.4
+django-filter==23.2

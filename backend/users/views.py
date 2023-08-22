@@ -46,7 +46,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         authors = request.user.subscriber.all().author.all()
         serializer = AuthorSerializer(authors, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        queryset = self.paginate_queryset(serializer.data)
+        return self.get_paginated_response(queryset)
 
     @action(['post', 'delete'], detail=True,
             permission_classes=[IsAuthenticated, ])
