@@ -31,17 +31,18 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     @action(methods=['get'], detail=False, url_path='me',
             permission_classes=[IsAuthenticated, ])
     def get_profile(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(request.user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(["post"], detail=False,
             permission_classes=[IsAuthenticated, ])
     def set_password(self, request, *args, **kwargs):
-        serializer = SetPasswordSerializer(data=request.data)
+        serializer = SetPasswordSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(["get"], detail=False,
             permission_classes=[IsAuthenticated, ])

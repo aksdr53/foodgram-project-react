@@ -152,7 +152,7 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'LOGIN_FIELD': 'email'
+    "LOGIN_FIELD": 'email',
 }
 
 AUTH_USER_MODEL = 'users.User'

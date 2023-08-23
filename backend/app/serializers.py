@@ -33,14 +33,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    amount = serializers.SerializerMethodField()
+    name = serializers.CharField(source='ingredient.name')
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
-        model = Ingredient
+        model = Ingredients_amount
         fields = ('id', 'name', 'measurement_unit', 'amount')
-    
-    def get_amount(self, obj):
-        return Ingredients_amount.objects.filter(recipe=obj).amount
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
@@ -61,7 +61,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     tags = TagSerializer(many=True)
-    ingredients = IngredientRecipeSerializer(many=True)
+    ingredients = serializers.SerializerMethodField()
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -81,6 +81,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
         current_user = self.context['request'].user
         if current_user.is_authenticated:
             return current_user.users_shopping_cart.filter(recipe=obj).exists()
+        
+    def get_ingredients(self, obj):
+        ingredients_amount =  Ingredients_amount.objects.filter(recipe=obj)
+        return IngredientRecipeSerializer(ingredients_amount, many=True).data
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
