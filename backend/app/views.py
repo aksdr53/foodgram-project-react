@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Recipe, Tag, Shopping_cart, Favorites, Ingredient
-from .serializers import (RecipeSerializer,
+from .serializers import (RecipeListSerializer,
                           TagSerializer,
                           Shopping_cartSerializer,
                           IngredientSerializer)
@@ -19,7 +19,7 @@ from .filters import RecipeFilter
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    serializer_class = RecipeListSerializer
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
     pagination_class = PageNumberPagination
@@ -122,3 +122,4 @@ class IngredientViewSet(ListRetrieveViewSet):
     pagination_class = None
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
+    http_method_names = ["get", ]

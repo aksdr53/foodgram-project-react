@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            "id", "username", "email", "first_name", "last_name",
+            "email", "id", "username", "first_name", "last_name",
             "is_subscribed"
         )
         model = User
@@ -32,10 +32,11 @@ class UserSerializer(serializers.ModelSerializer):
         return False
 
 
-class SignUpSerializer(serializers.Serializer):
+class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=EMAIL_MAX_LENGTH)
     username = serializers.RegexField(regex=r'^[\w.@+-]+\Z',
                                       required=True, max_length=MAX_LENGTH)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User

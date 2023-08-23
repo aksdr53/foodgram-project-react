@@ -10,12 +10,18 @@ class Tag(models.Model):
     color = models.CharField(max_length=16, unique=True, blank=False)
     slug = models.CharField(max_length=NAME_MAX_LENGTH,
                             verbose_name='Slug', unique=True, blank=False)
+    
+    def __str__(self):
+        return self.name
 
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=NAME_MAX_LENGTH,
                             verbose_name='Имя', blank=False)
     measurement_unit = models.CharField(max_length=16, blank=False)
+
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -38,9 +44,14 @@ class Recipe(models.Model):
                                        blank=False)
     pub_date = models.DateTimeField(auto_now_add=True,
                                     verbose_name='Дата публикации')
+    ingredients = models.ManyToManyField(Ingredient,
+                                         through='Ingredients_amount',
+                                         through_fields=('recipe', 'ingredient'),
+                                         related_name='recipe',
+                                         verbose_name='Ингридиенты')
 
     class Meta:
-        verbose_name = 'Рецепты'
+        verbose_name = 'Recipe'
         ordering = ('pub_date',)
 
     def __str__(self):
@@ -67,3 +78,6 @@ class Ingredients_amount(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
                                    related_name='ingredients_amount')
     amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.recipe

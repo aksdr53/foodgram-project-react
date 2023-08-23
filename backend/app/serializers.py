@@ -33,14 +33,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source='ingredient.name')
-    measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit'
-        )
+    amount = serializers.SerializerMethodField()
 
     class Meta:
-        model = Ingredients_amount
+        model = Ingredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
+    
+    def get_amount(self, obj):
+        return Ingredients_amount.objects.filter(recipe=obj).amount
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):

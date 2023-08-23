@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 
 from .models import User, Subscriptions
@@ -9,21 +9,23 @@ from .serializers import (UserSerializer,
                           SetPasswordSerializer,
                           AuthorSerializer,
                           SignUpSerializer)
+from .utils import PermissionPolicyMixin
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
     http_method_names = ["get", "post"]
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, ]
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('username',)
-    lookup_field = 'username'
+    permission_classes = [AllowAny, ]
+    permission_classes_per_method = {
+        "list": [AllowAny, ],
+        "retrieve": [IsAuthenticated, ]
+    }
 
-    def get_serializer_class(self, request):
+    def get_serializer_class(self):
         if self.action == "list" or self.action == "retrieve":
             return UserSerializer
-        if self.action == "create":
+        if self.request.method == "POST":
             return SignUpSerializer
 
     @action(methods=['get'], detail=False, url_path='me',
@@ -41,7 +43,7 @@ class UserViewSet(viewsets.ModelViewSet):
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
 
-    @action(["get"],
+    @action(["get"], detail=False,
             permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
         authors = request.user.subscriber.all().author.all()

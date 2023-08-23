@@ -4,9 +4,10 @@ from .models import User
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name',
+    list_display = ('id', 'username', 'first_name',
                     'last_name', 'email',
                     'role')
+    list_filter = ('email', 'first_name')
 
 
 admin.site.register(User, UserAdmin)
