@@ -10,7 +10,7 @@ class Tag(models.Model):
     color = models.CharField(max_length=16, unique=True, blank=False)
     slug = models.CharField(max_length=NAME_MAX_LENGTH,
                             verbose_name='Slug', unique=True, blank=False)
-    
+
     def __str__(self):
         return self.name
 
@@ -46,7 +46,8 @@ class Recipe(models.Model):
                                     verbose_name='Дата публикации')
     ingredients = models.ManyToManyField(Ingredient,
                                          through='Ingredients_amount',
-                                         through_fields=('recipe', 'ingredient'),
+                                         through_fields=('recipe',
+                                                         'ingredient'),
                                          related_name='recipe',
                                          verbose_name='Ингридиенты')
 

@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Recipe, Tag, Shopping_cart, Favorites, Ingredient
 from .serializers import (RecipeListSerializer,
+                          RecipeCreateSerializer,
                           TagSerializer,
                           Shopping_cartSerializer,
                           IngredientSerializer)
@@ -24,12 +25,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_class = RecipeFilter
     pagination_class = PageNumberPagination
 
+    def get_serializer_class(self):
+        if self.action == "list" or self.action == "retrieve":
+            return RecipeListSerializer
+        if self.action == "create" or self.action == "partial_update":
+            return RecipeCreateSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
     @action(methods=['post', 'delete'], detail=True)
     def shopping_cart(self, request, pk):
         recipe = Recipe.objects.get(id=pk)
         user = request.user
         if user.is_authenticated:
-            if self.action == 'post':
+            if request.method == 'POST':
                 if recipe and not Shopping_cart.objects.filter(
                     user=user,
                     recipe=recipe

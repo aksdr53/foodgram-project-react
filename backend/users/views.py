@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -37,7 +37,8 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     @action(["post"], detail=False,
             permission_classes=[IsAuthenticated, ])
     def set_password(self, request, *args, **kwargs):
-        serializer = SetPasswordSerializer(data=request.data, context={'request': request})
+        serializer = SetPasswordSerializer(data=request.data,
+                                           context={'request': request})
         serializer.is_valid(raise_exception=True)
 
         self.request.user.set_password(serializer.data["new_password"])
