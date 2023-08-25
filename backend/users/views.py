@@ -48,8 +48,10 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     @action(["get"], detail=False,
             permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
-        authors = request.user.subscriber.all().author.all()
-        serializer = AuthorSerializer(authors, many=True)
+        user = request.user
+        authors = User.objects.filter(subscriber__author=user)
+        serializer = AuthorSerializer(authors, many=True,
+                                      context={'request': request})
         queryset = self.paginate_queryset(serializer.data)
         return self.get_paginated_response(queryset)
 

@@ -105,6 +105,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -114,8 +115,10 @@ class AuthorSerializer(serializers.ModelSerializer):
         )
 
     def get_recipes(self, obj):
-        recipes_limit = self.context['request'].query_params['recipes_limit']
-        return RecipeSerializer(obj.recipes[:recipes_limit], many=True).data
+        recipes_limit = int(
+            self.context['request'].query_params['recipes_limit']
+        )
+        return RecipeSerializer(obj.recipes.all()[:recipes_limit], many=True).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()

@@ -82,7 +82,7 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         recipe = Recipe.objects.get(id=pk)
         user = request.user
         if user.is_authenticated:
-            if self.action == 'post':
+            if request.method == 'POST':
                 if recipe and not Favorites.objects.filter(
                     user=user,
                     recipe=recipe
@@ -92,7 +92,7 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
                     return Response(serializer.data,
                                     status=status.HTTP_201_CREATED)
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-            if self.action == 'delete':
+            if request.method == 'DELETE':
                 if Favorites.objects.filter(user=user,
                                             recipe=recipe).exists():
                     Favorites.objects.filter(user=user,
