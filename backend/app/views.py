@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont  
+from reportlab.pdfbase.ttfonts import TTFont
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -120,10 +120,12 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         pdf_object.drawCentredString(100, 800, "Список покупок")
         text_height = 700
         for ingredient in shopping_cart:
-            pdf_object.drawString(100, text_height,
-                                  f'{ingredient["ingredient__name"]} -'
-                                  f' {ingredient["amount"]},'
-                                  f'{ingredient["ingredient__measurement_unit"]}')
+            pdf_object.drawString(
+                100, text_height,
+                f'{ingredient["ingredient__name"]} -'
+                f'{ingredient["amount"]},'
+                f'{ingredient["ingredient__measurement_unit"]}'
+            )
             text_height -= 20
             if text_height <= 40:
                 text_height = 800

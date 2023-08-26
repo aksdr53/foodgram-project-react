@@ -118,7 +118,9 @@ class AuthorSerializer(serializers.ModelSerializer):
         recipes_limit = int(
             self.context['request'].query_params['recipes_limit']
         )
-        return RecipeSerializer(obj.recipes.all()[:recipes_limit], many=True).data
+        return RecipeSerializer(
+            obj.recipes.all()[:recipes_limit], many=True
+        ).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()

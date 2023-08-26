@@ -14,7 +14,7 @@ from .utils import PermissionPolicyMixin
 
 class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "delete"]
     serializer_class = UserSerializer
     permission_classes = [AllowAny, ]
     permission_classes_per_method = {
@@ -49,7 +49,11 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated, ])
     def subscriptions(self, request):
         user = request.user
-        authors = User.objects.filter(subscriber__author=user)
+        authors_id = Subscriptions.objects.filter(
+            subscriber=user
+        ).values('author')
+        authors = User.objects.filter(id__in=authors_id)
+
         serializer = AuthorSerializer(authors, many=True,
                                       context={'request': request})
         queryset = self.paginate_queryset(serializer.data)
@@ -60,12 +64,15 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     def subscribe(self, request, pk):
         author = get_object_or_404(User, id=pk)
         user = request.user
-        if user.id != pk and (
-            not user.subscriber.filter(author=author).exists()
-        ):
-            if request.method == 'POST':
-                Subscriptions.objects.create(author=author, user=user)
+        if user.id != author.id:
+            if request.method == 'POST' and (
+                not user.subscriber.filter(author=author).exists()
+            ):
+                Subscriptions.objects.create(author=author, subscriber=user)
+                return Response(status=status.HTTP_201_CREATED)
+            subscriptions = Subscriptions.objects.filter(author=author,
+                                                         subscriber=user)
+            if subscriptions:
+                subscriptions.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            Subscriptions.objects.delete(author=author, user=user)
-            return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
