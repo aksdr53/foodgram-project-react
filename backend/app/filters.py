@@ -21,7 +21,7 @@ class RecipeFilter(filters.FilterSet):
     def get_is_favorited(self, queryset, name, value):
         if value:
             return queryset.filter(
-                recipe_in_user_favorites__user=self.request.user
+                recipe_in_users_favorites__user=self.request.user
             )
         return queryset
 
