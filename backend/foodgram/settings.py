@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-h@b34omgn$+xvubqw(hwosc*_9!@3j2wbgxz)5$d^6k_q#mr_n
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['xxx.xxx.xxx.xxx', 'localhost', '127.0.0.1', 'topcats.site']
 
 
 # Application definition
