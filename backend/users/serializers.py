@@ -1,15 +1,13 @@
 import base64
 
-from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from app.models import Recipe
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.core.files.base import ContentFile
-
-
-from app.models import Recipe
+from foodgram.settings import EMAIL_MAX_LENGTH, MAX_LENGTH
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from users.models import User
-from foodgram.settings import MAX_LENGTH, EMAIL_MAX_LENGTH
 
 
 class UserSerializer(serializers.ModelSerializer):

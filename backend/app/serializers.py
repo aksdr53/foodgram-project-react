@@ -1,11 +1,11 @@
 import base64
 
-from rest_framework import serializers
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-
-from .models import Tag, Recipe, Ingredients_amount, Ingredient
+from rest_framework import serializers
 from users.serializers import UserSerializer
+
+from .models import Ingredient, Ingredients_amount, Recipe, Tag
 
 
 class Base64ImageField(serializers.ImageField):
