@@ -15,7 +15,7 @@ services:
     image: aksdr/foodgram_backend
     env_file: .env
     depends_on: 
-      -db
+      - db
     volumes:
       - static:/backend_static
       - media:/app/media
