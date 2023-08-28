@@ -4,8 +4,8 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-# from reportlab.pdfbase import pdfmetrics
-# from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
@@ -110,8 +110,8 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         )
         buffer = io.BytesIO()
         pdf_object = canvas.Canvas(buffer)
-        # pdfmetrics.registerFont(TTFont('Vera'))
-        pdf_object.setFont('Vera', 14)
+        pdfmetrics.registerFont(TTFont('Vera', 'Verdana.ttf'))
+        pdf_object.setFont('Verdana', 14)
         pdf_object.drawCentredString(100, 800, "Список покупок")
         text_height = 700
         for ingredient in shopping_cart:
@@ -125,7 +125,6 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
             if text_height <= 40:
                 text_height = 800
                 pdf_object.showPage()
-                pdf_object.setFont('Times-Roman', 14)
         pdf_object.showPage()
         pdf_object.save()
         buffer.seek(0)
