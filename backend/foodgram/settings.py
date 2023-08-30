@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'reportlab',
     'django_filters',
     'colorfield',
-    'dfr_extra_fields',
+    'drf_extra_fields',
     'dotenv'
 ]
 
