@@ -38,7 +38,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredients_amount
         fields = ('id', 'amount')
-    
+
     def validate_amount(self, value):
         if value <= 0:
             raise serializers.ValidationError({

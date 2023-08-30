@@ -73,7 +73,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class Added(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -86,7 +86,7 @@ class Added(models.Model):
     class Meta:
         abstract = True
         verbose_name = '%(class)s'
-    
+
     def __str__(self):
         return f'Рецепт {self.recipe} у {self.user}'
 
@@ -108,7 +108,7 @@ class Ingredients_amount(models.Model):
                                    verbose_name='Ингридиент')
     amount = models.PositiveIntegerField(verbose_name='Количество',
                                          validators=[MinValueValidator(1),
-                                                     MaxValueValidator(100000)])
+                                                     MaxValueValidator(10000)])
 
     class Meta:
         verbose_name = 'Ингредиенты в рецепте'
