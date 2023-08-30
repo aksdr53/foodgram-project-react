@@ -121,7 +121,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 'tags': 'Выберите тег!'
             })
         tags = []
-        for tag in tags:
+        for tag in init_tags:
             if tag in tags:
                 raise serializers.ValidationError({
                     'tags': 'Одинаковые теги'
