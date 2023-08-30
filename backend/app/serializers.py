@@ -140,7 +140,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for symbol in value:
             if symbol.isalpha():
                 return value
-        return serializers.ValidationError({
+        raise serializers.ValidationError({
             'name': 'Название не может состоять только из цифр и знаков'
         })
 
@@ -169,7 +169,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             Ingredients_amount.objects.update_or_create(
                 recipe=instance,
-                ingredient=ingredient['id'],
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=amount
             )
         return super().update(instance, validated_data)
