@@ -1,22 +1,9 @@
-import base64
-
-from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
+
 from users.serializers import UserSerializer
-
 from .models import Ingredient, Ingredients_amount, Recipe, Tag
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
-        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -51,10 +38,17 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredients_amount
         fields = ('id', 'amount')
+    
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError({
+                'amount': 'Количество должно быть больше 0'
+            })
+        return value
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+    image = Base64ImageField(required=True)
 
     class Meta:
         model = Recipe
@@ -62,7 +56,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+    image = Base64ImageField(required=True)
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
     author = UserSerializer()
@@ -92,10 +86,11 @@ class RecipeListSerializer(serializers.ModelSerializer):
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientAmountSerializer(many=True)
-    image = Base64ImageField()
+    image = Base64ImageField(required=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True)
     author = UserSerializer(read_only=True)
+    cooking_time = serializers.IntegerField()
 
     class Meta:
         model = Recipe
@@ -116,12 +111,38 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'ingredients': 'Одинаковые ингредиенты'
                 })
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'amount': 'Количество должно быть больше 0'
-                })
             ingredients.append(ingredient)
         return ingredients
+
+    def validate_tags(self, value):
+        init_tags = value
+        if not init_tags:
+            raise serializers.ValidationError({
+                'tags': 'Выберите тег!'
+            })
+        tags = []
+        for tag in tags:
+            if tag in tags:
+                raise serializers.ValidationError({
+                    'tags': 'Одинаковые теги'
+                })
+            tags.append(tag)
+        return tags
+
+    def validate_cooking_time(self, value):
+        if value <= 0:
+            raise serializers.ValidationError({
+                'cooking_time': 'Время должно быть больше 0'
+            })
+        return value
+
+    def validate_name(self, value):
+        for symbol in value:
+            if symbol.isalpha():
+                return value
+        raise serializers.ValidationError({
+            'name': 'Название не может состоять только из цифр и знаков'
+        })
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')

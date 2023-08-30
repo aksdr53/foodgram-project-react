@@ -43,10 +43,16 @@ class Subscriptions(models.Model):
     subscriber = models.ForeignKey(User, on_delete=models.CASCADE,
                                    related_name='subscriber',
                                    verbose_name='Подписчик')
-    
+
     class Meta:
         verbose_name = 'Подписки'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_prevent_self_follow",
+                check=~models.Q(subscriber=models.F("author")),
+            ),
+        ]
 
     def __str__(self) -> str:
         return f'{self.subscriber} subscribed for {self.author}'

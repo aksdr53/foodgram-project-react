@@ -1,18 +1,20 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure-h@b34omgn$+xvubqw(hwosc*_9!@3j2wbgxz)5$d^6k_q#mr_n'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 DEBUG = True
 
 ALLOWED_HOSTS = ['xxx.xxx.xxx.xxx', 'localhost', '127.0.0.1', 'topcats.site']
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,7 +30,9 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'reportlab',
     'django_filters',
-    'colorfield'
+    'colorfield',
+    'dfr_extra_fields',
+    'dotenv'
 ]
 
 MIDDLEWARE = [
@@ -90,9 +94,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

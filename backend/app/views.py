@@ -1,19 +1,14 @@
-import io
-
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from users.utils import PermissionPolicyMixin
 
+from users.utils import PermissionPolicyMixin
 from .filters import RecipeFilter
 from .models import (Favorites, Ingredient, Ingredients_amount, Recipe,
                      Shopping_cart, Tag)
@@ -21,6 +16,7 @@ from .permissions import IsAdminOrAuthor
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
                           RecipeListSerializer, Shopping_cartSerializer,
                           TagSerializer)
+from .utils import drawing_shopping_cart
 
 
 class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
@@ -108,26 +104,7 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         ).annotate(
             amount=Sum('amount')
         )
-        buffer = io.BytesIO()
-        pdf_object = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
-        pdf_object.setFont('Vera', 14)
-        pdf_object.drawCentredString(100, 800, "Список покупок")
-        text_height = 700
-        for ingredient in shopping_cart:
-            pdf_object.drawString(
-                100, text_height,
-                f'{ingredient["ingredient__name"]} -'
-                f'{ingredient["amount"]},'
-                f'{ingredient["ingredient__measurement_unit"]}'
-            )
-            text_height -= 20
-            if text_height <= 40:
-                text_height = 800
-                pdf_object.showPage()
-        pdf_object.showPage()
-        pdf_object.save()
-        buffer.seek(0)
+        buffer = drawing_shopping_cart(shopping_cart)
         return FileResponse(buffer, as_attachment=True,
                             filename='shopping_cart.pdf')
 

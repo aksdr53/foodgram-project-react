@@ -1,8 +1,6 @@
 class PermissionPolicyMixin:
     def check_permissions(self, request):
         try:
-            # This line is heavily inspired from `APIView.dispatch`.
-            # It returns the method associated with an endpoint.
             handler = getattr(self, request.method.lower())
         except AttributeError:
             handler = None
