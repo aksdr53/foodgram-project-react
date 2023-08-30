@@ -7,9 +7,11 @@ from users.models import User
 
 
 class Tag(models.Model):
-    name = models.CharField(verbose_name='Имя', unique=True, blank=False)
+    name = models.CharField(verbose_name='Имя', unique=True, blank=False,
+                            max_length=RECIPES_NAME_MAX_LENGTH)
     color = ColorField(default='#FF0000', verbose_name='Цвет')
-    slug = models.CharField(verbose_name='Slug', unique=True, blank=False)
+    slug = models.CharField(verbose_name='Slug', unique=True, blank=False,
+                            max_length=RECIPES_NAME_MAX_LENGTH)
 
     class Meta:
         verbose_name = 'Тэг'
@@ -20,7 +22,8 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(verbose_name='Имя', blank=False)
+    name = models.CharField(verbose_name='Имя', blank=False,
+                            max_length=RECIPES_NAME_MAX_LENGTH)
     measurement_unit = models.CharField(max_length=16, blank=False,
                                         verbose_name='Единицы измерения')
 
