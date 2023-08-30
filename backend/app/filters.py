@@ -4,7 +4,6 @@ from .models import Recipe, Tag
 
 
 class RecipeFilter(filters.FilterSet):
-    author = filters.CharFilter(field_name='author__id')
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name='tags__slug',

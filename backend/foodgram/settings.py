@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'app.apps.AppConfig',
     'users.apps.UsersConfig',
     'reportlab',
-    'django_filters'
+    'django_filters',
+    'colorfield'
 ]
 
 MIDDLEWARE = [
