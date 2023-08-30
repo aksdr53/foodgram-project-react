@@ -140,7 +140,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for symbol in value:
             if symbol.isalpha():
                 return value
-        raise serializers.ValidationError({
+        return serializers.ValidationError({
             'name': 'Название не может состоять только из цифр и знаков'
         })
 
