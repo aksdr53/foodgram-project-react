@@ -162,8 +162,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop("ingredients")
         tags = validated_data.pop("tags")
 
-        if tags is not None:
-            instance.tags.set(tags)
+        instance.tags.set(tags)
 
         for ingredient in ingredients:
             amount = ingredient.get('amount')
