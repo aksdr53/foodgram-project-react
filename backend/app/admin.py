@@ -8,6 +8,10 @@ class TagAdmin(admin.ModelAdmin):
                     'slug')
 
 
+class IngredientAmountInline(admin.TabularInline):
+    model = IngredientsAmount
+
+
 class IngredientsAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
     list_filter = ('name', )
@@ -15,10 +19,6 @@ class IngredientsAdmin(admin.ModelAdmin):
 
 class IngredientsAmountAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient')
-
-
-class IngredientAmountInline(admin.TabularInline):
-    model = IngredientsAmount
 
 
 class RecipeAdmin(admin.ModelAdmin):
