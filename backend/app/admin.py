@@ -12,7 +12,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',
                     'in_favorites')
     list_filter = ('author', 'name', 'tags')
-    radio_fields = {'tags': admin.HORIZONTAL}
     filter_horizontal = ('ingredients', )
 
     def in_favorites(self, obj):
