@@ -8,11 +8,18 @@ class TagAdmin(admin.ModelAdmin):
                     'slug')
 
 
+class IngredientAmountInline(admin.TabularInline):
+    model = IngredientsAmount
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',
                     'in_favorites')
     list_filter = ('author', 'name', 'tags')
     filter_horizontal = ('ingredients', )
+    inlines = [
+        IngredientAmountInline,
+    ]
 
     def in_favorites(self, obj):
         return obj.recipe_in_users_favorites.count()
