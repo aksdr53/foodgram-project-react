@@ -22,10 +22,22 @@ class IngredientsAmountAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
+    fields = (
+        (
+            "name",
+            "cooking_time",
+        ),
+        (
+            "author",
+            "tags",
+        ),
+        ("ingredients",),
+        ("text",),
+        ("image",),
+    )
     list_display = ('name', 'author',
                     'in_favorites')
     list_filter = ('author', 'name', 'tags')
-    filter_horizontal = ('ingredients', )
     inlines = [
         IngredientAmountInline,
     ]
