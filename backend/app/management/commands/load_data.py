@@ -1,7 +1,8 @@
 import csv
 
-from app.models import Ingredient
 from django.core.management.base import BaseCommand
+
+from app.models import Ingredient
 from foodgram.settings import BASE_DIR
 
 
@@ -11,7 +12,6 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             ingredients = []
             for row in reader:
-                print(row)
                 ingredients.append(Ingredient(
                     name=row['name'],
                     measurement_unit=row['measurement_unit']

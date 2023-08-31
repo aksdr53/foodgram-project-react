@@ -3,7 +3,7 @@ from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 
 from users.serializers import UserSerializer
-from .models import Ingredient, Ingredients_amount, Recipe, Tag
+from .models import Ingredient, IngredientsAmount, Recipe, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Ingredients_amount
+        model = IngredientsAmount
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
@@ -36,7 +36,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     amount = serializers.IntegerField()
 
     class Meta:
-        model = Ingredients_amount
+        model = IngredientsAmount
         fields = ('id', 'amount')
 
     def validate_amount(self, value):
@@ -80,7 +80,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             return current_user.users_shopping_cart.filter(recipe=obj).exists()
 
     def get_ingredients(self, obj):
-        ingredients_amount = Ingredients_amount.objects.filter(recipe=obj)
+        ingredients_amount = IngredientsAmount.objects.filter(recipe=obj)
         return IngredientRecipeSerializer(ingredients_amount, many=True).data
 
 
@@ -150,7 +150,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         for ingredient in ingredients:
-            Ingredients_amount.objects.create(
+            IngredientsAmount.objects.create(
                 recipe=recipe,
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=ingredient['amount']
@@ -166,7 +166,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         for ingredient in ingredients:
             amount = ingredient.get('amount')
-            Ingredients_amount.objects.update_or_create(
+            IngredientsAmount.objects.update_or_create(
                 recipe=instance,
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=amount

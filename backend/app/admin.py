@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Ingredient, Ingredients_amount, Recipe, Tag
+from .models import Ingredient, IngredientsAmount, Recipe, Tag
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -12,6 +12,8 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',
                     'in_favorites')
     list_filter = ('author', 'name', 'tags')
+    radio_fields = {'tags: admin.HORIZONTAL'}
+    filter_horizontal = ('ingredients', )
 
     def in_favorites(self, obj):
         return obj.recipe_in_users_favorites.count()
@@ -29,4 +31,4 @@ class IngredientsAmountAdmin(admin.ModelAdmin):
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientsAdmin)
-admin.site.register(Ingredients_amount, IngredientsAmountAdmin)
+admin.site.register(IngredientsAmount, IngredientsAmountAdmin)

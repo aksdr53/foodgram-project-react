@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from users.utils import PermissionPolicyMixin
 from .filters import RecipeFilter
-from .models import (Favorites, Ingredient, Ingredients_amount, Recipe,
+from .models import (Favorites, Ingredient, IngredientsAmount, Recipe,
                      Shopping_cart, Tag)
 from .permissions import IsAdminOrAuthor
 from .serializers import (IngredientSerializer, RecipeCreateSerializer,
@@ -96,7 +96,7 @@ class RecipeViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated, ])
     def download_shopping_cart(self, request):
         user = request.user
-        shopping_cart = Ingredients_amount.objects.filter(
+        shopping_cart = IngredientsAmount.objects.filter(
             recipe__recipe_in_users_shopping_cart__user=user
         ).values(
             'ingredient__name',

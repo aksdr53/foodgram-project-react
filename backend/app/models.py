@@ -48,7 +48,8 @@ class Recipe(models.Model):
                             verbose_name='Описание')
     tags = models.ManyToManyField(Tag,
                                   related_name='tags_in_recipe',
-                                  verbose_name='Тэги')
+                                  verbose_name='Тэги',
+                                  blank=False)
     image = models.ImageField(
         upload_to='recipes/images/',
         null=True,
@@ -64,11 +65,12 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True,
                                     verbose_name='Дата публикации')
     ingredients = models.ManyToManyField(Ingredient,
-                                         through='Ingredients_amount',
+                                         through='IngredientsAmount',
                                          through_fields=('recipe',
                                                          'ingredient'),
                                          related_name='recipe',
-                                         verbose_name='Ингридиенты')
+                                         verbose_name='Ингридиенты',
+                                         blank=False)
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -79,7 +81,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class Added(models.Model):
+class FavoritesShoppingCartBaseClass(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='users_%(class)s',
                              verbose_name='Пользователь')
@@ -95,15 +97,21 @@ class Added(models.Model):
         return f'Рецепт {self.recipe} у {self.user}'
 
 
-class Favorites(Added):
-    pass
+class Favorites(FavoritesShoppingCartBaseClass):
+
+    class Meta:
+        verbose_name = "Избранное"
+        ordering = ('user', )
 
 
-class Shopping_cart(Added):
-    pass
+class Shopping_cart(FavoritesShoppingCartBaseClass):
+
+    class Meta:
+        verbose_name = "Корзина"
+        ordering = ('user', )
 
 
-class Ingredients_amount(models.Model):
+class IngredientsAmount(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='ingredients_amount_in_recipe',
                                verbose_name='Рецепт')
