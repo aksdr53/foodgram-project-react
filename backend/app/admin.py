@@ -8,6 +8,15 @@ class TagAdmin(admin.ModelAdmin):
                     'slug')
 
 
+class IngredientsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    list_filter = ('name', )
+
+
+class IngredientsAmountAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient')
+
+
 class IngredientAmountInline(admin.TabularInline):
     model = IngredientsAmount
 
@@ -23,15 +32,6 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def in_favorites(self, obj):
         return obj.recipe_in_users_favorites.count()
-
-
-class IngredientsAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit')
-    list_filter = ('name', )
-
-
-class IngredientsAmountAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient')
 
 
 admin.site.register(Tag, TagAdmin)
