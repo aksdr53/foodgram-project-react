@@ -10,6 +10,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class IngredientAmountInline(admin.TabularInline):
     model = IngredientsAmount
+    min_num = 1
 
 
 class IngredientsAdmin(admin.ModelAdmin):
