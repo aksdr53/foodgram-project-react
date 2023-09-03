@@ -83,8 +83,24 @@ class RecipeListSerializer(serializers.ModelSerializer):
         return IngredientRecipeSerializer(ingredients_amount, many=True).data
 
 
+class IngredientAmountCreateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(write_only=True)
+    amount = serializers.IntegerField()
+
+    class Meta:
+        model = IngredientsAmount
+        fields = ('id', 'amount')
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError({
+                'amount': 'Количество должно быть больше 0'
+            })
+        return value
+
+
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    ingredients = IngredientAmountSerializer(many=True)
+    ingredients = IngredientAmountCreateSerializer(many=True)
     image = Base64ImageField(required=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True)
