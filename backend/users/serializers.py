@@ -99,9 +99,12 @@ class AuthorSerializer(serializers.ModelSerializer):
         )
 
     def get_recipes(self, obj):
-        recipes_limit = int(
-            self.context['request'].query_params['recipes_limit']
-        )
+        if 'recipes_limit' in self.context['request'].query_params:
+            recipes_limit = int(
+                self.context['request'].query_params['recipes_limit']
+            )
+        else:
+            recipes_limit = 3
         return RecipeSerializer(
             obj.recipes.all()[:recipes_limit], many=True
         ).data
