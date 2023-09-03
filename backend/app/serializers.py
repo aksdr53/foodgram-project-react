@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
@@ -106,13 +108,13 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             })
         ingredients = []
         for ingredient in init_ingredient:
-            if get_object_or_404(Ingredient,
-                                 id=ingredient['id']) in ingredients:
+            val_ingredient = get_object_or_404(Ingredient, id=ingredient['id'])
+            if val_ingredient in ingredients:
                 raise serializers.ValidationError({
                     'ingredients': 'Одинаковые ингредиенты'
                 })
-            ingredients.append(ingredient)
-        return ingredients
+            ingredients.append(val_ingredient)
+        return init_ingredient
 
     def validate_tags(self, value):
         init_tags = value
@@ -137,12 +139,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_name(self, value):
-        for symbol in value:
-            if symbol.isalpha():
-                return value
-        raise serializers.ValidationError({
-            'name': 'Название не может состоять только из цифр и знаков'
-        })
+        if re.match(r'^[\W\d\s]+$', value):
+            raise serializers.ValidationError({
+                'name': 'Название не может состоять только из цифр и знаков'
+            })
+        return value
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
