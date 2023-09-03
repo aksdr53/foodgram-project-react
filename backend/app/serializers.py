@@ -100,7 +100,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('author', 'id')
 
     def validate_ingredients(self, value):
-        init_ingredient = self.initial_data['ingredients']
+        init_ingredient = self.initial_data.get("ingredients")
         if not init_ingredient:
             raise serializers.ValidationError({
                 'ingredients': 'Выберите ингрединет'
@@ -138,13 +138,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if re.match(r'^[\W\d\s]+$', value):
-            raise serializers.ValidationError({
-                'name': 'Название не может состоять только из цифр и знаков'
-            })
+            raise serializers.ValidationError(
+                'Название не может состоять только из цифр и знаков'
+            )
         return value
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
+        print(ingredients)
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
