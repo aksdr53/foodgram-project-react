@@ -93,9 +93,9 @@ class IngredientAmountCreateSerializer(serializers.ModelSerializer):
 
     def validate_amount(self, value):
         if value <= 0:
-            raise serializers.ValidationError({
-                'amount': 'Количество должно быть больше 0'
-            })
+            raise serializers.ValidationError(
+                'Количество должно быть больше 0'
+            )
         return value
 
 
@@ -116,16 +116,16 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, value):
         init_ingredient = self.initial_data['ingredients']
         if not init_ingredient:
-            raise serializers.ValidationError({
-                'ingredients': 'Выберите ингрединет'
-            })
+            raise serializers.ValidationError(
+                'Выберите ингрединет'
+            )
         val_ingredients = []
         ingredients = []
         for ingredient in init_ingredient:
             if ingredient['id'] in ingredients:
-                raise serializers.ValidationError({
-                    'ingredients': 'Одинаковые ингредиенты'
-                })
+                raise serializers.ValidationError(
+                    'Одинаковые ингредиенты'
+                )
             val_ingredients.append(ingredient)
             ingredients.append(ingredient['id'])
         return val_ingredients
@@ -133,23 +133,23 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         init_tags = value
         if not init_tags:
-            raise serializers.ValidationError({
-                'tags': 'Выберите тег!'
-            })
+            raise serializers.ValidationError(
+                'Выберите тег!'
+            )
         tags = []
         for tag in init_tags:
             if tag in tags:
-                raise serializers.ValidationError({
-                    'tags': 'Одинаковые теги'
-                })
+                raise serializers.ValidationError(
+                    'Одинаковые теги'
+                )
             tags.append(tag)
         return tags
 
     def validate_cooking_time(self, value):
         if value <= 0:
-            raise serializers.ValidationError({
-                'cooking_time': 'Время должно быть больше 0'
-            })
+            raise serializers.ValidationError(
+                'Время должно быть больше 0'
+            )
         return value
 
     def validate_name(self, value):
@@ -180,9 +180,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         instance.tags.set(tags)
 
+        IngredientsAmount.objects.filter(recipe=instance).delete()
+
         for ingredient in ingredients:
             amount = ingredient.get('amount')
-            IngredientsAmount.objects.update_or_create(
+            IngredientsAmount.objects.create(
                 recipe=instance,
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=amount
