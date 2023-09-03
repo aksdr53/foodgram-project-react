@@ -1,10 +1,10 @@
-from app.models import Recipe
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from drf_extra_fields.fields import Base64ImageField
 
+from app.models import Recipe
 from users.models import User
 from foodgram.settings import EMAIL_MAX_LENGTH, MAX_LENGTH
 
