@@ -1,6 +1,5 @@
 import re
 
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
 
@@ -106,15 +105,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'ingredients': 'Выберите ингрединет'
             })
-        ingredients = []
+        ingredients_ids = []
         for ingredient in init_ingredient:
-            val_ingredient = get_object_or_404(Ingredient, id=ingredient['id'])
-            if val_ingredient in ingredients:
+            if ingredient['id'] in ingredients_ids:
                 raise serializers.ValidationError({
                     'ingredients': 'Одинаковые ингредиенты'
                 })
-            ingredients.append(val_ingredient)
-        return init_ingredient
+            ingredients_ids.append(ingredient['id'])
+        return value
 
     def validate_tags(self, value):
         init_tags = value
@@ -165,9 +163,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         instance.tags.set(tags)
 
+        IngredientsAmount.objects.filter(recipe=instance).delete()
+
         for ingredient in ingredients:
             amount = ingredient.get('amount')
-            IngredientsAmount.objects.update_or_create(
+            IngredientsAmount.objects.create(
                 recipe=instance,
                 ingredient=Ingredient.objects.get(id=ingredient['id']),
                 amount=amount
