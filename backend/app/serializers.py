@@ -112,7 +112,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'ingredients': 'Одинаковые ингредиенты'
                 })
             ingredients_ids.append(ingredient['id'])
-        return value
+        return init_ingredient
 
     def validate_tags(self, value):
         init_tags = value
