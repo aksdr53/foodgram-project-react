@@ -106,13 +106,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             })
         ingredients = []
         for ingredient in init_ingredient:
-            if get_object_or_404(Ingredient,
-                                 id=ingredient['id']) in ingredients:
+            if ingredient['id'] in ingredients:
                 raise serializers.ValidationError({
                     'ingredients': 'Одинаковые ингредиенты'
                 })
-            ingredients.append(ingredient)
-        return ingredients
+            ingredients.append(ingredient['id'])
+        return init_ingredient
 
     def validate_tags(self, value):
         init_tags = value
