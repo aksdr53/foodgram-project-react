@@ -66,8 +66,11 @@ class UserViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
             if request.method == 'POST' and (
                 not user.subscriber.filter(author=author).exists()
             ):
+                serializer = AuthorSerializer(author,
+                                              context={'request': request})
                 Subscriptions.objects.create(author=author, subscriber=user)
-                return Response(status=status.HTTP_201_CREATED)
+                return Response(serializer.data,
+                                status=status.HTTP_201_CREATED)
             subscriptions = Subscriptions.objects.filter(author=author,
                                                          subscriber=user)
             if subscriptions:
