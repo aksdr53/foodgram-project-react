@@ -138,9 +138,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if re.match(r'^[\W\d\s]+$', value):
-            raise serializers.ValidationError({
-                'name': 'Название не может состоять только из цифр и знаков'
-            })
+            msg = _('Название не может состоять только из цифр и знаков')
+            raise serializers.ValidationError(msg)
         return value
 
     def create(self, validated_data):
